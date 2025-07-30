@@ -1034,6 +1034,37 @@ def list_subscription_events(config, data_source_uuid=None, external_id=None, cu
     return all_subscription_events
 
 
+def create_subscription_event(config, data):
+    """
+    Create a subscription_event from ChartMogul API.
+
+    Returns:
+    """
+    LOGGER.info(f"Creating subscription_event {data}.")
+    request = chartmogul.SubscriptionEvent.create(config, data={"subscription_event": data})
+    try:
+        subscription_event = parse_object(request.get())
+    except Exception as e:
+        LOGGER.error(f"Error creating subscription_event: {str(e)}", exc_info=True)
+        return None
+    return subscription_event
+
+
+def update_subscription_event(config, data):
+    """
+    Update a subscription_event from ChartMogul API.
+
+    Returns:
+    """
+    LOGGER.info(f"Updating subscription_event {data}.")
+    request = chartmogul.SubscriptionEvent.modify_with_params(config, data={"subscription_event": data})
+    try:
+        subscription_event = parse_object(request.get())
+    except Exception as e:
+        LOGGER.error(f"Error updating subscription_event: {str(e)}", exc_info=True)
+        return None
+    return subscription_event
+
 ## Invoices
 
 def list_invoices(config, data_source_uuid=None, external_id=None, customer_uuid=None,
@@ -1068,6 +1099,37 @@ def list_invoices(config, data_source_uuid=None, external_id=None, customer_uuid
             return None
     return all_invoices
 
+
+def import_invoices(config, data, uuid):
+    """
+    Import invoices into ChartMogul API.
+
+    Returns:
+    """
+    LOGGER.info(f"Importing invoices {data}, {uuid}.")
+    request = chartmogul.Invoice.create(config, data=data, uuid=uuid)
+    try:
+        invoice = parse_object(request.get())
+    except Exception as e:
+        LOGGER.error(f"Error importing invoices: {str(e)}", exc_info=True)
+        return None
+    return invoice
+
+
+def retrieve_invoice(config, uuid, validation_type):
+    """
+    Retrieve an invoice from ChartMogul API.
+
+    Returns: The invoice.
+    """
+    LOGGER.info(f"Retrieving invoice for {uuid}, {validation_type}.")
+    request = chartmogul.Invoice.retrieve(config, uuid=uuid, validation_type=validation_type)
+    try:
+        invoice = parse_object(request.get())
+    except Exception as e:
+        LOGGER.error(f"Error retrieving invoice: {str(e)}", exc_info=True)
+        return None
+    return invoice
 
 ## Activities
 
