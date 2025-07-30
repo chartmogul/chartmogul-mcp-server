@@ -71,7 +71,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/8f/c4/d4f6872599dad9a7c
 
 [[package]]
 name = "chartmogul-mcp-server"
-version = "0.3.0"
+version = "0.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "chartmogul" },
