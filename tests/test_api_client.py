@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-import logging
+from unittest.mock import Mock, patch
 from chartmogul_mcp.api_client import (
     handle_api_errors, 
     init_chartmogul_config,

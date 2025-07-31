@@ -34,7 +34,7 @@ def retrieve_account(config):
     Retrieve the account information.
 
     """
-    LOGGER.info(f"Retrieve account information.")
+    LOGGER.info("Retrieve account information.")
     request = chartmogul.Account.retrieve(config)
     account = parse_object(request.get())
     return account
@@ -537,7 +537,7 @@ def list_plan_groups(config, limit=20) -> list:
 
     Returns: A list of ChartMogul plan groups.
     """
-    LOGGER.info(f"List plan groups.")
+    LOGGER.info("List plan groups.")
     all_plan_groups = []
     has_more = True
     cursor = None

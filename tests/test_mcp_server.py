@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
-import sys
+from unittest.mock import Mock, patch
 
 
 class TestChartMogulMcp:
@@ -44,7 +43,7 @@ class TestChartMogulMcp:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         # Create instance
-        server = ChartMogulMcp()
+        ChartMogulMcp()
         
         # Verify logging
         mock_logger.info.assert_called_with("ChartMogul MCP Server initialized")
@@ -58,7 +57,7 @@ class TestChartMogulMcp:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         with patch.object(ChartMogulMcp, '_register_tools') as mock_register:
-            server = ChartMogulMcp()
+            ChartMogulMcp()
             mock_register.assert_called_once()
 
 
@@ -78,7 +77,7 @@ class TestToolRegistration:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         # Create instance (this will call _register_tools)
-        server = ChartMogulMcp()
+        ChartMogulMcp()
         
         # Verify that the tool decorator was called for retrieve_account
         mock_mcp_instance.tool.assert_called()
@@ -115,7 +114,7 @@ class TestToolRegistration:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         # Create instance
-        server = ChartMogulMcp()
+        ChartMogulMcp()
         
         # Check that list_sources tool was registered
         tool_calls = mock_mcp_instance.tool.call_args_list
@@ -147,7 +146,7 @@ class TestToolRegistration:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         # Create instance
-        server = ChartMogulMcp()
+        ChartMogulMcp()
         
         # Verify that tool decorator was called multiple times
         assert mock_mcp_instance.tool.call_count >= 2, "Multiple tools should be registered"
@@ -172,7 +171,7 @@ class TestMCPServerImports:
     def test_module_imports(self):
         """Test that all required modules can be imported."""
         try:
-            from chartmogul_mcp import mcp_server
+            import chartmogul_mcp.mcp_server  # noqa: F401
             assert True
         except ImportError as e:
             pytest.fail(f"Failed to import mcp_server module: {e}")
@@ -187,16 +186,6 @@ class TestMCPServerImports:
     
     def test_required_dependencies_importable(self):
         """Test that all dependencies used in mcp_server can be imported."""
-        required_imports = [
-            'sys',
-            'datetime', 
-            'typing.Dict',
-            'mcp.server.fastmcp.FastMCP',
-            'chartmogul_mcp.api_client',
-            'chartmogul_mcp.utils',
-            'dotenv.load_dotenv'
-        ]
-        
         # Test basic imports that should always work
         basic_imports = ['sys', 'datetime']
         for module_name in basic_imports:
@@ -235,7 +224,7 @@ class TestAsyncToolFunctions:
         from chartmogul_mcp.mcp_server import ChartMogulMcp
         
         # Create instance (this will register tools)
-        server = ChartMogulMcp()
+        ChartMogulMcp()
         
         # Check that we captured some functions
         assert len(registered_functions) > 0, "Should have captured registered functions"

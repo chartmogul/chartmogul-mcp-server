@@ -115,13 +115,6 @@ def test_utils_constants():
     """Test that utils module has expected constants."""
     print("Testing utils constants...")
     
-    # Test that we can define expected constants
-    expected_constants = {
-        'MCP_SERVER_NAME': str,
-        'DEPENDENCIES': list,
-        'CHARTMOGUL_TOKEN': (str, type(None)),  # Could be None if not set
-    }
-    
     # Mock the constants for testing
     MCP_SERVER_NAME = "mcp-chartmogul"
     DEPENDENCIES = ["chartmogul", "python-dotenv"]
@@ -246,14 +239,14 @@ def run_all_tests():
             traceback.print_exc()
             failed += 1
     
-    print(f"\n" + "=" * 50)
-    print(f"📊 Test Results:")
+    print("\n" + "=" * 50)
+    print("📊 Test Results:")
     print(f"✅ Passed: {passed}")
     print(f"❌ Failed: {failed}")
     print(f"📝 Total:  {passed + failed}")
     
     if failed == 0:
-        print(f"\n🎉 All standalone tests passed!")
+        print("\n🎉 All standalone tests passed!")
         return 0
     else:
         print(f"\n💥 {failed} test(s) failed!")

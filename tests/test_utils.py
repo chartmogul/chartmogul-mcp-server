@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 import logging
 import os
 
@@ -74,7 +74,7 @@ class TestUtilsModule:
         """Test that all required modules can be imported."""
         # This test ensures all imports in utils.py work correctly
         try:
-            from chartmogul_mcp import utils
+            import chartmogul_mcp.utils  # noqa: F401
             # If we get here, all imports succeeded
             assert True
         except ImportError as e:
@@ -101,19 +101,15 @@ class TestLoggingConfiguration:
     
     def test_logging_format(self):
         """Test that logging is configured with expected format."""
-        from chartmogul_mcp import utils
+        # Get the actual logger to test its configuration
+        actual_logger = logging.getLogger("mcp-chartmogul")
         
-        # Create a test log message and check it's formatted correctly
-        with patch('chartmogul_mcp.utils.LOGGER') as mock_logger:
-            # Get the actual logger to test its configuration
-            actual_logger = logging.getLogger("mcp-chartmogul")
-            
-            # Check that logger exists and can be used
-            assert actual_logger is not None
-            
-            # Test that we can log messages (this verifies configuration)
-            actual_logger.info("Test message")
-            # If we get here without exception, logging is configured correctly
+        # Check that logger exists and can be used
+        assert actual_logger is not None
+        
+        # Test that we can log messages (this verifies configuration)
+        actual_logger.info("Test message")
+        # If we get here without exception, logging is configured correctly
     
     def test_logger_name_matches_server_name(self):
         """Test that logger name matches MCP_SERVER_NAME."""

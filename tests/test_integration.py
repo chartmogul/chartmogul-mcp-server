@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import os
-import sys
 
 
 class TestEndToEndIntegration:
@@ -149,7 +148,7 @@ class TestConfigurationIntegration:
         """Test configuration creation with None token."""
         from chartmogul_mcp.api_client import init_chartmogul_config
         
-        result = init_chartmogul_config()
+        config = init_chartmogul_config()
         
         # Should still create config, even with None token
         mock_config.assert_called_once_with(None)
