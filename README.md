@@ -65,7 +65,11 @@
 
 ### Data Operations
 - `list_subscription_events` - List subscription events
+- `create_subscription_event` - Create new subscription event
+- `update_subscription_event` - Update subscription event details
 - `list_invoices` - List invoices with filtering
+- `import_invoices` - Create new invoice
+- `retrieve_invoice` - Get invoice by UUID
 - `list_activities` - List business activities (new_biz, expansion, churn, etc.)
 
 ## Usage
