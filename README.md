@@ -1,4 +1,6 @@
-# ChartMogul's MCP Server
+# ChartMogul MCP Server
+
+[![Tests](https://github.com/chartmogul/chartmogul-mcp-server/actions/workflows/test.yml/badge.svg)](https://github.com/chartmogul/chartmogul-mcp-server/actions/workflows/test.yml)
 
 ## Supported Tools
 
@@ -112,10 +114,37 @@ CHARTMOGUL_TOKEN=<YOUR-CHARTMOGUL-TOKEN>
 ```
 3. Install `uv` by following the instructions [here](https://docs.astral.sh/uv/).
 
-4. Run `uv sync` to install the dependencies. 
+4. Run `uv sync --dev` to install the dependencies including test dependencies.
 
 5. Run `source .venv/bin/activate` to activate the created virtual environment.
 
 6. Run `mcp dev main.py:cm_mcp` to start the development MCP server. This command will need Node.js and npm installation.
 
 7. Inspect and connect to the MCP server at http://127.0.0.1:6274
+
+### Testing
+
+```bash
+# Run all tests with coverage
+uv run pytest tests/ --cov=chartmogul_mcp --cov-report=term-missing
+
+# Run standalone tests (no external dependencies)
+python3 tests/test_standalone.py
+
+# Run linting and formatting
+uv run ruff check chartmogul_mcp/ tests/
+uv run black chartmogul_mcp/ tests/
+
+# Run type checking
+uv run mypy chartmogul_mcp/ --ignore-missing-imports
+```
+
+### Continuous Integration
+
+Tests run automatically on every push via GitHub Actions. The workflow:
+- Tests on Python 3.13
+- Runs syntax checks, linting, formatting, and type checking
+- Executes full test suite with coverage reporting
+- Uploads coverage to Codecov
+
+See [`.github/workflows/test.yml`](.github/workflows/test.yml) for full CI configuration.
