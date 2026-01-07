@@ -409,6 +409,137 @@ class ChartMogulMcp:
         async def create_task(data: dict) -> Dict:
             return api_client.create_task(self.config, data)
 
+        ## CFL Reference - ChartMogul Filtering Language
+        @self.mcp.tool(name='get_cfl_fields',
+                       description='[ChartMogul Reference] Get comprehensive list of ChartMogul Filtering Language (CFL) fields and operators. '
+                                   'Returns complete documentation for filtering metrics endpoints. Use this tool when you need to know '
+                                   'what fields are available for the filters parameter in metrics endpoints, their types, supported operators, '
+                                   'and examples. Returns: CFL syntax rules, field-to-operator mappings, all filterable fields with their types, '
+                                   'and practical examples.')
+        async def get_cfl_fields() -> Dict:
+            return {
+                "syntax": "field~operator~value~AND~field~operator~value (tilde-separated, only AND supported)",
+                "field_type_operators": {
+                    "numeric_fields": {
+                        "fields": ["mrr", "mrr_at_time_of_purchase", "mrr_before_churn", "net_payments", "average_order_value",
+                                  "active_quantity", "active_subscriptions", "contacts_count", "successful_payment_count",
+                                  "customer_lifetime", "trial_to_conversion_in_days", "trial_to_paid_in_days"],
+                        "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
+                        "value_format": "Numbers without quotes: 1000 or 500,2000 for BETWEEN",
+                        "examples": ["mrr~GT~1000", "active_quantity~BETWEEN~1,10", "net_payments~LTE~5000"]
+                    },
+                    "date_fields": {
+                        "fields": ["customer_since", "churned_on", "churning_at", "contracted_on", "expanded_on", "reactivated_on",
+                                  "free_trial_started_at", "last_payment", "next_payment", "renewal_at", "subscriber_since",
+                                  "paid_subscriber_since", "lead_created_at", "last_active_at", "last_communication_at",
+                                  "last_email_received_from_customer_at", "last_email_sent_to_customer_at", "due_at"],
+                        "operators": ["BETWEEN", "LT", "LTE", "EQ", "GTE", "GT", "IS", "IS_NOT"],
+                        "value_format": "ISO 8601 dates in quotes: '2024-01-01' or NULL",
+                        "examples": ["customer_since~GTE~'2024-01-01'", "churned_on~IS~NULL", "renewal_at~BETWEEN~'2024-01-01','2024-12-31'"]
+                    },
+                    "plan_uuid_fields": {
+                        "fields": ["plan", "plan_group", "plan_at_purchase", "plan_group_at_purchase", "plan_at_subscription_start",
+                                  "plan_group_at_subscription_start", "plan_at_trial_start", "plan_group_at_trial_start",
+                                  "plan_sub_set", "plan_group_sub_set"],
+                        "operators": ["ALL", "ANY", "NONE"],
+                        "additional_operators": ["IS_NOT (some fields)"],
+                        "value_format": "UUIDs in quotes: 'pl_uuid1','pl_uuid2' or NULL",
+                        "examples": ["plan~ANY~'pl_abc123','pl_def456'", "plan_group~NONE~'plg_xyz789'", "plan_at_trial_start~IS_NOT~NULL"],
+                        "special_note": "Plan filters connected with AND act as OR (match either condition)"
+                    },
+                    "categorical_list_fields": {
+                        "fields": ["currency", "region", "data_source", "customer"],
+                        "operators": ["ALL", "ANY", "NONE"],
+                        "additional_operators": ["IS", "IS_NOT (for nullable fields like region)"],
+                        "value_format": "Strings in quotes: 'USD','EUR' or NULL",
+                        "examples": ["currency~ANY~'USD','EUR','GBP'", "region~ANY~'US','CA'", "region~IS~NULL"]
+                    },
+                    "status_field": {
+                        "fields": ["customer_status"],
+                        "operators": ["ANY", "NONE"],
+                        "value_format": "Status values in quotes",
+                        "allowed_values": ["new_lead", "working_lead", "qualified_lead", "unqualified_lead", "active", "past_due", "cancelled"],
+                        "examples": ["customer_status~ANY~'active','past_due'", "customer_status~NONE~'cancelled'"]
+                    },
+                    "tags_field": {
+                        "fields": ["tags"],
+                        "operators": ["ALL", "ANY", "NONE", "IS", "IS_NOT"],
+                        "value_format": "Tag strings in quotes: 'tag1','tag2' or NULL",
+                        "examples": ["tags~ANY~'vip','enterprise'", "tags~ALL~'active','premium'", "tags~IS~NULL"]
+                    },
+                    "string_fields": {
+                        "fields": ["website", "owner"],
+                        "operators": ["EQ", "NOT_EQ", "CONTAINS", "NOT_CONTAINS", "IS", "IS_NOT"],
+                        "additional_operators": ["ANY", "NONE (for list values)"],
+                        "value_format": "Strings in quotes: 'example.com' or NULL",
+                        "examples": ["website~CONTAINS~'.com'", "website~IS~NULL", "owner~IS_NOT~NULL"]
+                    },
+                    "boolean_fields": {
+                        "fields": ["has_discount", "has_open_task", "has_opportunity"],
+                        "operators": ["EQ", "IS_NULL_OR_EQ"],
+                        "value_format": "TRUE or FALSE (no quotes)",
+                        "examples": ["has_discount~EQ~TRUE", "has_opportunity~EQ~FALSE"]
+                    },
+                    "custom_attributes": {
+                        "fields": ["custom.attribute_name (replace with actual attribute name)"],
+                        "types": {
+                            "custom_boolean": {
+                                "operators": ["EQ", "IS_NULL_OR_EQ"],
+                                "value_format": "TRUE or FALSE",
+                                "example": "custom.is_enterprise~EQ~TRUE"
+                            },
+                            "custom_date": {
+                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "GTE", "GT", "IS", "IS_NOT"],
+                                "value_format": "ISO 8601 dates: '2024-01-01' or NULL",
+                                "example": "custom.contract_start~GTE~'2024-01-01'"
+                            },
+                            "custom_float": {
+                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
+                                "value_format": "Numbers: 99.99",
+                                "example": "custom.ltv_score~GT~500.5"
+                            },
+                            "custom_integer": {
+                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
+                                "value_format": "Numbers: 100",
+                                "example": "custom.employee_count~BETWEEN~50,200"
+                            },
+                            "custom_string": {
+                                "operators": ["EQ", "NOT_EQ", "CONTAINS", "NOT_CONTAINS", "IS", "IS_NOT"],
+                                "value_format": "Strings in quotes: 'value' or NULL",
+                                "example": "custom.industry~EQ~'SaaS'"
+                            },
+                            "custom_string_array": {
+                                "operators": ["ANY", "NONE"],
+                                "value_format": "Strings in quotes: 'val1','val2' or NULL",
+                                "example": "custom.categories~ANY~'premium','enterprise'"
+                            }
+                        }
+                    }
+                },
+                "complete_examples": [
+                    "currency~ANY~'USD','EUR' - Customers with USD or EUR currency",
+                    "mrr~GT~1000~AND~region~ANY~'US' - MRR > 1000 AND in US region",
+                    "customer_status~ANY~'active'~AND~tags~ANY~'vip' - Active customers with VIP tag",
+                    "churned_on~IS~NULL - Customers not churned (active)",
+                    "mrr~BETWEEN~500,2000 - MRR between 500 and 2000",
+                    "plan~ANY~'pl_uuid1','pl_uuid2' - Customers on specific plans",
+                    "custom.company_size~EQ~'enterprise' - Custom string attribute",
+                    "custom.employee_count~GTE~100 - Custom integer attribute",
+                    "has_discount~EQ~TRUE - Customers with discount",
+                    "website~CONTAINS~'.com'~AND~has_opportunity~EQ~TRUE - Website filter with opportunity",
+                    "customer_since~GTE~'2024-01-01'~AND~mrr~GT~5000 - Recent high-value customers"
+                ],
+                "important_notes": [
+                    "Only ~AND~ logical operator is supported (all conditions must match)",
+                    "Plan filters with AND act as OR (matches either plan OR plan_group)",
+                    "Custom attributes use dot notation: custom.attribute_name",
+                    "Always match field type with compatible operators from the mappings above",
+                    "Strings and UUIDs must be in single quotes: 'value'",
+                    "Numbers, booleans (TRUE/FALSE), and NULL have no quotes",
+                    "Use IS or IS_NOT to check for NULL values on nullable fields"
+                ]
+            }
+
         ## Metrics API - ChartMogul Analytics
         @self.mcp.tool(name='all_metrics',
                        description='[ChartMogul API] Retrieve all key metrics for time period. CRITICAL: ALL MONETARY VALUES '
@@ -424,10 +555,16 @@ class ChartMogulMcp:
                                    'end_date (string: YYYY-MM-DD), interval (string: "day", "week", "month", "quarter", "year"). '
                                    'OPTIONAL: geo (string: ISO 3166-1 Alpha-2 comma-separated like "US,GB,DE"), '
                                    'plans (string: plan names/UUIDs/external_ids comma-separated, URL-encode spaces like '
-                                   '"Silver%20plan,Gold%20plan,pl_abc123,enterprise_plan"). Example: mrr=36981972 means $369,819.72')
+                                   '"Silver%20plan,Gold%20plan,pl_abc123,enterprise_plan"), '
+                                   'filters (string: CFL-formatted expressions using tilde separators. Syntax: field~operator~value~AND~field~operator~value. '
+                                   'Common fields: mrr, currency, region, customer_status, plan, tags, custom.attribute_name. '
+                                   'Operators: ANY/ALL/NONE (sets), EQ/NOT_EQ, GT/GTE/LT/LTE (comparison), CONTAINS/NOT_CONTAINS (strings), '
+                                   'IS/IS_NOT (nulls). Examples: "currency~ANY~\'USD\',\'EUR\'", "mrr~GT~1000~AND~region~ANY~\'US\'", '
+                                   '"customer_status~ANY~\'active\'~AND~tags~ANY~\'vip\'". Use get_cfl_fields tool for complete field list). '
+                                   'Example: mrr=36981972 means $369,819.72')
         async def all_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.all_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.all_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='mrr_metrics',
                        description='[ChartMogul API] Retrieve Monthly Recurring Revenue metrics. CRITICAL: ALL MRR VALUES '
@@ -441,32 +578,36 @@ class ChartMogulMcp:
                                    'contraction (downgrades excluding cancellations), churn (cancellations), '
                                    'reactivation (previously cancelled returning). REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: mrr=363819722 means $3,638,197.22, mrr_new_business=288938 means $2,889.38')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... '
+                                   'Example: "mrr~GT~1000~AND~currency~ANY~\'USD\'". Use get_cfl_fields for field list). '
+                                   'Example: mrr=363819722 means $3,638,197.22, mrr_new_business=288938 means $2,889.38')
         async def mrr_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.mrr_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.mrr_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='arr_metrics',
                        description='[ChartMogul API] Retrieve Annual Recurring Revenue metrics. CRITICAL: ARR VALUES ARE '
                                    'INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. ARR = MRR × 12. '
                                    'Returns entries array with: date (string), arr (integer cents), arr_percentage_change (float). '
                                    'Plus summary object. REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), '
-                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans. '
+                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: arr=4076455668 means $40,764,556.68')
         async def arr_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.arr_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.arr_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='arpa_metrics',
                        description='[ChartMogul API] Retrieve Average Revenue Per Account metrics. CRITICAL: ARPA VALUES '
                                    'ARE INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. ARPA = Total MRR / Total Customers. '
                                    'Returns entries array with: date (string), arpa (integer cents), arpa_percentage_change (float). '
                                    'Plus summary object. REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), '
-                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans. '
+                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: arpa=84767 means $847.67 average revenue per account')
         async def arpa_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                               plans: str = None) -> list:
-            return api_client.arpa_metrics(self.config, start_date, end_date, interval, geo, plans)
+                               plans: str = None, filters: str = None) -> list:
+            return api_client.arpa_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='asp_metrics',
                        description='[ChartMogul API] Retrieve Average Sale Price metrics. CRITICAL: ASP VALUES ARE '
@@ -474,20 +615,22 @@ class ChartMogulMcp:
                                    'amount of new customers. Returns entries array with: date (string), asp (integer cents), '
                                    'asp_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval (string: "month", "quarter", "year" ONLY - day/week NOT supported). '
-                                   'OPTIONAL: geo, plans. Example: asp=152454 means $1,524.54 average sale price')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: asp=152454 means $1,524.54 average sale price')
         async def asp_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.asp_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.asp_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='customer_count_metrics',
                        description='[ChartMogul API] Retrieve customer count metrics (total active customers over time). '
                                    'Returns entries array with: date (string), customers (integer count), '
                                    'customers_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: customers=382 means 382 active customers')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: customers=382 means 382 active customers')
         async def customer_count_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                         plans: str = None) -> list:
-            return api_client.customer_count_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                         plans: str = None, filters: str = None) -> list:
+            return api_client.customer_count_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='customer_churn_rate_metrics',
                        description='[ChartMogul API] Retrieve customer churn rate metrics as percentage. '
@@ -495,10 +638,11 @@ class ChartMogulMcp:
                                    'Returns entries array with: date (string), customer_churn_rate (float percentage), '
                                    'customer_churn_rate_percentage_change (float). Plus summary object. '
                                    'REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: customer_churn_rate=3.9 means 3.9% customer churn rate')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: customer_churn_rate=3.9 means 3.9% customer churn rate')
         async def customer_churn_rate_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                              plans: str = None) -> list:
-            return api_client.customer_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                              plans: str = None, filters: str = None) -> list:
+            return api_client.customer_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='mrr_churn_rate_metrics',
                        description='[ChartMogul API] Retrieve Net MRR Churn Rate metrics as percentage. '
@@ -508,21 +652,23 @@ class ChartMogulMcp:
                                    '(e.g., -300% means MRR quadrupled). Returns entries array with: date (string), '
                                    'mrr_churn_rate (float percentage), mrr_churn_rate_percentage_change (float). Plus summary object. '
                                    'REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: mrr_churn_rate=-5.2 means -5.2% (net negative churn - good!)')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: mrr_churn_rate=-5.2 means -5.2% (net negative churn - good!)')
         async def mrr_churn_rate_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                         plans: str = None) -> list:
-            return api_client.mrr_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                         plans: str = None, filters: str = None) -> list:
+            return api_client.mrr_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='ltv_metrics',
                        description='[ChartMogul API] Retrieve Customer Lifetime Value metrics. CRITICAL: LTV VALUES ARE '
                                    'INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. LTV = Average Revenue Per User / '
                                    'Customer Churn Rate. Returns entries array with: date (string), ltv (integer cents), '
                                    'ltv_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
-                                   'end_date (YYYY-MM-DD), interval (any valid value). OPTIONAL: geo, plans. '
+                                   'end_date (YYYY-MM-DD), interval (any valid value). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: ltv=2977624 means $29,776.24 customer lifetime value')
         async def ltv_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.ltv_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.ltv_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         ## Subscription Events - ChartMogul Subscription Lifecycle
         @self.mcp.tool(name='list_subscription_events',
