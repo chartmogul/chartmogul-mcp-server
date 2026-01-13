@@ -414,109 +414,369 @@ class ChartMogulMcp:
                        description='[ChartMogul Reference] Get comprehensive list of ChartMogul Filtering Language (CFL) fields and operators. '
                                    'Returns complete documentation for filtering metrics endpoints. Use this tool when you need to know '
                                    'what fields are available for the filters parameter in metrics endpoints, their types, supported operators, '
-                                   'and examples. Returns: CFL syntax rules, field-to-operator mappings, all filterable fields with their types, '
+                                   'and examples. Returns: CFL syntax rules, complete field-by-field reference with all operators and value formats, '
                                    'and practical examples.')
         async def get_cfl_fields() -> Dict:
             return {
-                "syntax": "field~operator~value~AND~field~operator~value (tilde-separated, only AND supported)",
-                "field_type_operators": {
-                    "numeric_fields": {
-                        "fields": ["mrr", "mrr_at_time_of_purchase", "mrr_before_churn", "net_payments", "average_order_value",
-                                  "active_quantity", "active_subscriptions", "contacts_count", "successful_payment_count",
-                                  "customer_lifetime", "trial_to_conversion_in_days", "trial_to_paid_in_days"],
-                        "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
-                        "value_format": "Numbers without quotes: 1000 or 500,2000 for BETWEEN",
-                        "examples": ["mrr~GT~1000", "active_quantity~BETWEEN~1,10", "net_payments~LTE~5000"]
+                "syntax": {
+                    "format": "field~operator~value~AND~field~operator~value",
+                    "separator": "~ (tilde) used as separator/space",
+                    "logical_operator": "AND (only AND supported, all conditions must match)",
+                    "example": "currency~NONE~'EUR','JPY'~AND~mrr~BETWEEN~0,3.14~AND~tags~ANY~'PayPal','Stripe'"
+                },
+                "all_fields": {
+                    "active_quantity": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
                     },
-                    "date_fields": {
-                        "fields": ["customer_since", "churned_on", "churning_at", "contracted_on", "expanded_on", "reactivated_on",
-                                  "free_trial_started_at", "last_payment", "next_payment", "renewal_at", "subscriber_since",
-                                  "paid_subscriber_since", "lead_created_at", "last_active_at", "last_communication_at",
-                                  "last_email_received_from_customer_at", "last_email_sent_to_customer_at", "due_at"],
-                        "operators": ["BETWEEN", "LT", "LTE", "EQ", "GTE", "GT", "IS", "IS_NOT"],
-                        "value_format": "ISO 8601 dates in quotes: '2024-01-01' or NULL",
-                        "examples": ["customer_since~GTE~'2024-01-01'", "churned_on~IS~NULL", "renewal_at~BETWEEN~'2024-01-01','2024-12-31'"]
+                    "active_subscriptions": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
                     },
-                    "plan_uuid_fields": {
-                        "fields": ["plan", "plan_group", "plan_at_purchase", "plan_group_at_purchase", "plan_at_subscription_start",
-                                  "plan_group_at_subscription_start", "plan_at_trial_start", "plan_group_at_trial_start",
-                                  "plan_sub_set", "plan_group_sub_set"],
-                        "operators": ["ALL", "ANY", "NONE"],
-                        "additional_operators": ["IS_NOT (some fields)"],
-                        "value_format": "UUIDs in quotes: 'pl_uuid1','pl_uuid2' or NULL",
-                        "examples": ["plan~ANY~'pl_abc123','pl_def456'", "plan_group~NONE~'plg_xyz789'", "plan_at_trial_start~IS_NOT~NULL"],
-                        "special_note": "Plan filters connected with AND act as OR (match either condition)"
+                    "average_order_value": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
                     },
-                    "categorical_list_fields": {
-                        "fields": ["currency", "region", "data_source", "customer"],
-                        "operators": ["ALL", "ANY", "NONE"],
-                        "additional_operators": ["IS", "IS_NOT (for nullable fields like region)"],
-                        "value_format": "Strings in quotes: 'USD','EUR' or NULL",
-                        "examples": ["currency~ANY~'USD','EUR','GBP'", "region~ANY~'US','CA'", "region~IS~NULL"]
+                    "churned_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
                     },
-                    "status_field": {
-                        "fields": ["customer_status"],
-                        "operators": ["ANY", "NONE"],
-                        "value_format": "Status values in quotes",
-                        "allowed_values": ["new_lead", "working_lead", "qualified_lead", "unqualified_lead", "active", "past_due", "cancelled"],
-                        "examples": ["customer_status~ANY~'active','past_due'", "customer_status~NONE~'cancelled'"]
+                    "churning_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
                     },
-                    "tags_field": {
-                        "fields": ["tags"],
-                        "operators": ["ALL", "ANY", "NONE", "IS", "IS_NOT"],
-                        "value_format": "Tag strings in quotes: 'tag1','tag2' or NULL",
-                        "examples": ["tags~ANY~'vip','enterprise'", "tags~ALL~'active','premium'", "tags~IS~NULL"]
+                    "contacts_count": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
                     },
-                    "string_fields": {
-                        "fields": ["website", "owner"],
-                        "operators": ["EQ", "NOT_EQ", "CONTAINS", "NOT_CONTAINS", "IS", "IS_NOT"],
-                        "additional_operators": ["ANY", "NONE (for list values)"],
-                        "value_format": "Strings in quotes: 'example.com' or NULL",
-                        "examples": ["website~CONTAINS~'.com'", "website~IS~NULL", "owner~IS_NOT~NULL"]
+                    "contracted_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
                     },
-                    "boolean_fields": {
-                        "fields": ["has_discount", "has_open_task", "has_opportunity"],
-                        "operators": ["EQ", "IS_NULL_OR_EQ"],
-                        "value_format": "TRUE or FALSE (no quotes)",
-                        "examples": ["has_discount~EQ~TRUE", "has_opportunity~EQ~FALSE"]
+                    "currency": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated, single quoted ISO 4217 currency codes e.g. 'EUR','USD'"
+                        }
                     },
-                    "custom_attributes": {
-                        "fields": ["custom.attribute_name (replace with actual attribute name)"],
-                        "types": {
-                            "custom_boolean": {
-                                "operators": ["EQ", "IS_NULL_OR_EQ"],
-                                "value_format": "TRUE or FALSE",
-                                "example": "custom.is_enterprise~EQ~TRUE"
-                            },
-                            "custom_date": {
-                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "GTE", "GT", "IS", "IS_NOT"],
-                                "value_format": "ISO 8601 dates: '2024-01-01' or NULL",
-                                "example": "custom.contract_start~GTE~'2024-01-01'"
-                            },
-                            "custom_float": {
-                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
-                                "value_format": "Numbers: 99.99",
-                                "example": "custom.ltv_score~GT~500.5"
-                            },
-                            "custom_integer": {
-                                "operators": ["BETWEEN", "LT", "LTE", "EQ", "NOT_EQ", "GTE", "GT"],
-                                "value_format": "Numbers: 100",
-                                "example": "custom.employee_count~BETWEEN~50,200"
-                            },
-                            "custom_string": {
-                                "operators": ["EQ", "NOT_EQ", "CONTAINS", "NOT_CONTAINS", "IS", "IS_NOT"],
-                                "value_format": "Strings in quotes: 'value' or NULL",
-                                "example": "custom.industry~EQ~'SaaS'"
-                            },
-                            "custom_string_array": {
-                                "operators": ["ANY", "NONE"],
-                                "value_format": "Strings in quotes: 'val1','val2' or NULL",
-                                "example": "custom.categories~ANY~'premium','enterprise'"
-                            }
+                    "customer_lifetime": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "customer": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated customer UUIDs e.g. cus_11111111-1111-1111-1111-111111111111,cus_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "customer_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "customer_status": {
+                        "operators": {
+                            "ANY|NONE": "comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "data_source": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated data source UUIDs e.g. ds_11111111-1111-1111-1111-111111111111,ds_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "due_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "every_plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "every_plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "expanded_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "free_trial_started_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "has_discount": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "has_open_task": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "has_opportunity": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "last_active_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_communication_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_email_received_from_customer_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_email_sent_to_customer_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_payment": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "last_plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "lead_created_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "mrr_at_time_of_purchase": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "mrr_before_churn": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "mrr": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "net_payments": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "next_payment": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "owner": {
+                        "operators": {
+                            "ANY|NONE|IS_NOT|IS": "NULL or comma separated integers e.g. 0,118,999,88199,9119,725,3"
+                        }
+                    },
+                    "paid_subscriber_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "plan_at_purchase": {
+                        "operators": {
+                            "ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_at_subscription_start": {
+                        "operators": {
+                            "IS_NOT|ALL|ANY|NONE": "NULL or comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_at_trial_start": {
+                        "operators": {
+                            "IS_NOT|ALL|ANY|NONE": "NULL or comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_purchase": {
+                        "operators": {
+                            "ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_subscription_start": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_trial_start": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_sub_set": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_sub_set": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "reactivated_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "region": {
+                        "operators": {
+                            "ANY|NONE|IS_NOT|IS": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "renewal_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "subscriber_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "subscription_status": {
+                        "operators": {
+                            "=|EQ": "a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "successful_payment_count": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "tags": {
+                        "operators": {
+                            "ALL|ANY|NONE|IS_NOT|IS": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "trial_to_conversion_in_days": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "trial_to_paid_in_days": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "website": {
+                        "operators": {
+                            "ANY|NONE": "NULL or comma separated, single quoted strings e.g. 'hello','there'",
+                            "=|EQ|!=|NOT_EQ|CONTAINS|NOT_CONTAINS|IS_NOT|IS": "NULL or a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "custom.<attribute_name> (bool)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "=|EQ|IS_NULL_OR_EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "custom.<attribute_name> (date)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31"
+                        }
+                    },
+                    "custom.<attribute_name> (float)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated floats e.g. 0.01,9.99",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "a float e.g. 3.14"
+                        }
+                    },
+                    "custom.<attribute_name> (integer)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "custom.<attribute_name> (string)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "=|EQ|!=|NOT_EQ|CONTAINS|NOT_CONTAINS|IS_NOT|IS": "NULL or a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "custom.<attribute_name> (string array)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "ANY|NONE": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
                         }
                     }
                 },
-                "complete_examples": [
+                "quick_examples": [
                     "currency~ANY~'USD','EUR' - Customers with USD or EUR currency",
                     "mrr~GT~1000~AND~region~ANY~'US' - MRR > 1000 AND in US region",
                     "customer_status~ANY~'active'~AND~tags~ANY~'vip' - Active customers with VIP tag",
@@ -526,17 +786,16 @@ class ChartMogulMcp:
                     "custom.company_size~EQ~'enterprise' - Custom string attribute",
                     "custom.employee_count~GTE~100 - Custom integer attribute",
                     "has_discount~EQ~TRUE - Customers with discount",
-                    "website~CONTAINS~'.com'~AND~has_opportunity~EQ~TRUE - Website filter with opportunity",
-                    "customer_since~GTE~'2024-01-01'~AND~mrr~GT~5000 - Recent high-value customers"
+                    "website~CONTAINS~'.com'~AND~has_opportunity~EQ~TRUE - Website filter with opportunity"
                 ],
                 "important_notes": [
                     "Only ~AND~ logical operator is supported (all conditions must match)",
-                    "Plan filters with AND act as OR (matches either plan OR plan_group)",
                     "Custom attributes use dot notation: custom.attribute_name",
-                    "Always match field type with compatible operators from the mappings above",
                     "Strings and UUIDs must be in single quotes: 'value'",
                     "Numbers, booleans (TRUE/FALSE), and NULL have no quotes",
-                    "Use IS or IS_NOT to check for NULL values on nullable fields"
+                    "Use IS or IS_NOT to check for NULL values on nullable fields",
+                    "Plan filters connected with AND act as OR (match either condition)",
+                    "Use ~ (tilde) as separator between field, operator, and value"
                 ]
             }
 
