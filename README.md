@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/chartmogul-chartmogul-mcp-server-badge.png)](https://mseep.ai/app/chartmogul-chartmogul-mcp-server)
+
 # ChartMogul's MCP Server
 
 ## Supported Tools
