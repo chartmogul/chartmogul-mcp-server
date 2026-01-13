@@ -717,19 +717,20 @@ def update_task(config, uuid, data):
 # Metrics API Endpoints
 
 @handle_api_errors("fetching all metrics")
-def all_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def all_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List all metrics from ChartMogul API.
 
     Returns: A list of all metrics.
     """
-    LOGGER.info(f"Fetching all metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching all metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.all(config,
                                      start_date=start_date,
                                      end_date=end_date,
                                      interval=interval,
                                      geo=geo,
-                                     plans=plans
+                                     plans=plans,
+                                     filters=filters
                                      )
     metrics = request.get()
     all_metrics = [parse_object(entry) for entry in metrics.entries]
@@ -737,19 +738,20 @@ def all_metrics(config, start_date, end_date, interval, geo=None, plans=None) ->
 
 
 @handle_api_errors("fetching MRR metrics")
-def mrr_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def mrr_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List MRR metrics from ChartMogul API.
 
     Returns: A list of MRR metrics.
     """
-    LOGGER.info(f"Fetching MRR metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching MRR metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.mrr(config,
                                      start_date=start_date,
                                      end_date=end_date,
                                      interval=interval,
                                      geo=geo,
-                                     plans=plans
+                                     plans=plans,
+                                     filters=filters
                                      )
     mrr = request.get()
     all_mrr = [parse_object(entry) for entry in mrr.entries]
@@ -757,19 +759,20 @@ def mrr_metrics(config, start_date, end_date, interval, geo=None, plans=None) ->
 
 
 @handle_api_errors("fetching ARR metrics")
-def arr_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def arr_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List ARR metrics from ChartMogul API.
 
     Returns: A list of ARR metrics.
     """
-    LOGGER.info(f"Fetching ARR metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching ARR metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.arr(config,
                                      start_date=start_date,
                                      end_date=end_date,
                                      interval=interval,
                                      geo=geo,
-                                     plans=plans
+                                     plans=plans,
+                                     filters=filters
                                      )
     arr = request.get()
     all_arr = [parse_object(entry) for entry in arr.entries]
@@ -777,19 +780,20 @@ def arr_metrics(config, start_date, end_date, interval, geo=None, plans=None) ->
 
 
 @handle_api_errors("fetching ARPA metrics")
-def arpa_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def arpa_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List ARPA metrics from ChartMogul API.
 
     Returns: A list of ARPA metrics.
     """
-    LOGGER.info(f"Fetching ARPA metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching ARPA metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.arpa(config,
                                       start_date=start_date,
                                       end_date=end_date,
                                       interval=interval,
                                       geo=geo,
-                                      plans=plans
+                                      plans=plans,
+                                      filters=filters
                                       )
     arpa = request.get()
     all_arpa = [parse_object(entry) for entry in arpa.entries]
@@ -797,19 +801,20 @@ def arpa_metrics(config, start_date, end_date, interval, geo=None, plans=None) -
 
 
 @handle_api_errors("fetching ASP metrics")
-def asp_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def asp_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List ASP metrics from ChartMogul API.
 
     Returns: A list of ASP metrics.
     """
-    LOGGER.info(f"Fetching ASP metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching ASP metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.asp(config,
                                      start_date=start_date,
                                      end_date=end_date,
                                      interval=interval,
                                      geo=geo,
-                                     plans=plans
+                                     plans=plans,
+                                     filters=filters
                                      )
     asp = request.get()
     all_asp = [parse_object(entry) for entry in asp.entries]
@@ -817,19 +822,20 @@ def asp_metrics(config, start_date, end_date, interval, geo=None, plans=None) ->
 
 
 @handle_api_errors("fetching customer count metrics")
-def customer_count_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def customer_count_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List Customer count metrics from ChartMogul API.
 
     Returns: A list of Customer count metrics.
     """
-    LOGGER.info(f"Fetching Customer count metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching Customer count metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.customer_count(config,
                                                 start_date=start_date,
                                                 end_date=end_date,
                                                 interval=interval,
                                                 geo=geo,
-                                                plans=plans
+                                                plans=plans,
+                                                filters=filters
                                                 )
     customer_count = request.get()
     all_customer_count = [parse_object(entry) for entry in customer_count.entries]
@@ -837,19 +843,20 @@ def customer_count_metrics(config, start_date, end_date, interval, geo=None, pla
 
 
 @handle_api_errors("fetching customer churn rate metrics")
-def customer_churn_rate_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def customer_churn_rate_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List Customer churn rate metrics from ChartMogul API.
 
     Returns: A list of Customer churn rate metrics.
     """
-    LOGGER.info(f"Fetching Customer churn rate metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching Customer churn rate metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.customer_churn_rate(config,
                                                      start_date=start_date,
                                                      end_date=end_date,
                                                      interval=interval,
                                                      geo=geo,
-                                                     plans=plans
+                                                     plans=plans,
+                                                     filters=filters
                                                      )
     customer_churn_rate = request.get()
     all_customer_churn_rate = [parse_object(entry) for entry in customer_churn_rate.entries]
@@ -857,19 +864,20 @@ def customer_churn_rate_metrics(config, start_date, end_date, interval, geo=None
 
 
 @handle_api_errors("fetching MRR churn rate metrics")
-def mrr_churn_rate_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def mrr_churn_rate_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List MRR churn rate metrics from ChartMogul API.
 
     Returns: A list of MRR churn rate metrics.
     """
-    LOGGER.info(f"Fetching MRR churn rate metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching MRR churn rate metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.mrr_churn_rate(config,
                                                 start_date=start_date,
                                                 end_date=end_date,
                                                 interval=interval,
                                                 geo=geo,
-                                                plans=plans
+                                                plans=plans,
+                                                filters=filters
                                                 )
     mrr_churn_rate = request.get()
     all_mrr_churn_rate = [parse_object(entry) for entry in mrr_churn_rate.entries]
@@ -877,19 +885,20 @@ def mrr_churn_rate_metrics(config, start_date, end_date, interval, geo=None, pla
 
 
 @handle_api_errors("fetching LTV metrics")
-def ltv_metrics(config, start_date, end_date, interval, geo=None, plans=None) -> list:
+def ltv_metrics(config, start_date, end_date, interval, geo=None, plans=None, filters=None) -> list:
     """
     List LTV metrics from ChartMogul API.
 
     Returns: A list of LTV metrics.
     """
-    LOGGER.info(f"Fetching LTV metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}.")
+    LOGGER.info(f"Fetching LTV metrics for {start_date}, {end_date}, {interval}, {geo}, {plans}, {filters}.")
     request = chartmogul.Metrics.ltv(config,
                                      start_date=start_date,
                                      end_date=end_date,
                                      interval=interval,
                                      geo=geo,
-                                     plans=plans
+                                     plans=plans,
+                                     filters=filters
                                      )
     ltv = request.get()
     all_ltv = [parse_object(entry) for entry in ltv.entries]

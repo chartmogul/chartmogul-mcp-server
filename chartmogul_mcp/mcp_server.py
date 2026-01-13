@@ -409,6 +409,396 @@ class ChartMogulMcp:
         async def create_task(data: dict) -> Dict:
             return api_client.create_task(self.config, data)
 
+        ## CFL Reference - ChartMogul Filtering Language
+        @self.mcp.tool(name='get_cfl_fields',
+                       description='[ChartMogul Reference] Get comprehensive list of ChartMogul Filtering Language (CFL) fields and operators. '
+                                   'Returns complete documentation for filtering metrics endpoints. Use this tool when you need to know '
+                                   'what fields are available for the filters parameter in metrics endpoints, their types, supported operators, '
+                                   'and examples. Returns: CFL syntax rules, complete field-by-field reference with all operators and value formats, '
+                                   'and practical examples.')
+        async def get_cfl_fields() -> Dict:
+            return {
+                "syntax": {
+                    "format": "field~operator~value~AND~field~operator~value",
+                    "separator": "~ (tilde) used as separator/space",
+                    "logical_operator": "AND (only AND supported, all conditions must match)",
+                    "example": "currency~NONE~'EUR','JPY'~AND~mrr~BETWEEN~0,3.14~AND~tags~ANY~'PayPal','Stripe'"
+                },
+                "all_fields": {
+                    "active_quantity": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "active_subscriptions": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "average_order_value": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "churned_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "churning_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "contacts_count": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "contracted_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "currency": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated, single quoted ISO 4217 currency codes e.g. 'EUR','USD'"
+                        }
+                    },
+                    "customer_lifetime": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "customer": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated customer UUIDs e.g. cus_11111111-1111-1111-1111-111111111111,cus_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "customer_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "customer_status": {
+                        "operators": {
+                            "ANY|NONE": "comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "data_source": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated data source UUIDs e.g. ds_11111111-1111-1111-1111-111111111111,ds_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "due_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "every_plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "every_plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "expanded_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "free_trial_started_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "has_discount": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "has_open_task": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "has_opportunity": {
+                        "operators": {
+                            "=|EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "last_active_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_communication_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_email_received_from_customer_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_email_sent_to_customer_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_payment": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "last_plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "last_plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "lead_created_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "mrr_at_time_of_purchase": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "mrr_before_churn": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "mrr": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "net_payments": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers or floats e.g. 0,3.14",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer or float e.g. 3.14"
+                        }
+                    },
+                    "next_payment": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "owner": {
+                        "operators": {
+                            "ANY|NONE|IS_NOT|IS": "NULL or comma separated integers e.g. 0,118,999,88199,9119,725,3"
+                        }
+                    },
+                    "paid_subscriber_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "plan_at_purchase": {
+                        "operators": {
+                            "ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_at_subscription_start": {
+                        "operators": {
+                            "IS_NOT|ALL|ANY|NONE": "NULL or comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_at_trial_start": {
+                        "operators": {
+                            "IS_NOT|ALL|ANY|NONE": "NULL or comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_purchase": {
+                        "operators": {
+                            "ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_subscription_start": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_at_trial_start": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_group_sub_set": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan group UUIDs e.g. plg_11111111-1111-1111-1111-111111111111,plg_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "plan_sub_set": {
+                        "operators": {
+                            "ALL|ANY|NONE": "comma separated plan UUIDs e.g. pl_11111111-1111-1111-1111-111111111111,pl_22222222-2222-2222-2222-222222222222"
+                        }
+                    },
+                    "reactivated_on": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "region": {
+                        "operators": {
+                            "ANY|NONE|IS_NOT|IS": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "renewal_at": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "subscriber_since": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31 or NULL"
+                        }
+                    },
+                    "subscription_status": {
+                        "operators": {
+                            "=|EQ": "a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "successful_payment_count": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "tags": {
+                        "operators": {
+                            "ALL|ANY|NONE|IS_NOT|IS": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    },
+                    "trial_to_conversion_in_days": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "trial_to_paid_in_days": {
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "website": {
+                        "operators": {
+                            "ANY|NONE": "NULL or comma separated, single quoted strings e.g. 'hello','there'",
+                            "=|EQ|!=|NOT_EQ|CONTAINS|NOT_CONTAINS|IS_NOT|IS": "NULL or a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "custom.<attribute_name> (bool)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "=|EQ|IS_NULL_OR_EQ": "TRUE or FALSE"
+                        }
+                    },
+                    "custom.<attribute_name> (date)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated ISO 8601 dates e.g. 1970-01-01,2149-06-06",
+                            "<=|LTE|>=|GTE|=|EQ|<|LT|>|GT|IS_NOT|IS": "an ISO 8601 date e.g. 1999-12-31"
+                        }
+                    },
+                    "custom.<attribute_name> (float)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated floats e.g. 0.01,9.99",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "a float e.g. 3.14"
+                        }
+                    },
+                    "custom.<attribute_name> (integer)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "BETWEEN": "2 comma separated integers e.g. 0,11",
+                            "<=|LTE|>=|GTE|=|EQ|!=|NOT_EQ|<|LT|>|GT": "an integer e.g. 3"
+                        }
+                    },
+                    "custom.<attribute_name> (string)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "=|EQ|!=|NOT_EQ|CONTAINS|NOT_CONTAINS|IS_NOT|IS": "NULL or a single quoted string e.g. 'hello'"
+                        }
+                    },
+                    "custom.<attribute_name> (string array)": {
+                        "pattern": "/^custom(\\.[a-zA-Z0-9_]+)+$/",
+                        "operators": {
+                            "ANY|NONE": "NULL or comma separated, single quoted strings e.g. 'hello','there'"
+                        }
+                    }
+                },
+                "quick_examples": [
+                    "currency~ANY~'USD','EUR' - Customers with USD or EUR currency",
+                    "mrr~GT~1000~AND~region~ANY~'US' - MRR > 1000 AND in US region",
+                    "customer_status~ANY~'active'~AND~tags~ANY~'vip' - Active customers with VIP tag",
+                    "churned_on~IS~NULL - Customers not churned (active)",
+                    "mrr~BETWEEN~500,2000 - MRR between 500 and 2000",
+                    "plan~ANY~'pl_uuid1','pl_uuid2' - Customers on specific plans",
+                    "custom.company_size~EQ~'enterprise' - Custom string attribute",
+                    "custom.employee_count~GTE~100 - Custom integer attribute",
+                    "has_discount~EQ~TRUE - Customers with discount",
+                    "website~CONTAINS~'.com'~AND~has_opportunity~EQ~TRUE - Website filter with opportunity"
+                ],
+                "important_notes": [
+                    "Only ~AND~ logical operator is supported (all conditions must match)",
+                    "Custom attributes use dot notation: custom.attribute_name",
+                    "Strings and UUIDs must be in single quotes: 'value'",
+                    "Numbers, booleans (TRUE/FALSE), and NULL have no quotes",
+                    "Use IS or IS_NOT to check for NULL values on nullable fields",
+                    "Plan filters connected with AND act as OR (match either condition)",
+                    "Use ~ (tilde) as separator between field, operator, and value"
+                ]
+            }
+
         ## Metrics API - ChartMogul Analytics
         @self.mcp.tool(name='all_metrics',
                        description='[ChartMogul API] Retrieve all key metrics for time period. CRITICAL: ALL MONETARY VALUES '
@@ -424,10 +814,16 @@ class ChartMogulMcp:
                                    'end_date (string: YYYY-MM-DD), interval (string: "day", "week", "month", "quarter", "year"). '
                                    'OPTIONAL: geo (string: ISO 3166-1 Alpha-2 comma-separated like "US,GB,DE"), '
                                    'plans (string: plan names/UUIDs/external_ids comma-separated, URL-encode spaces like '
-                                   '"Silver%20plan,Gold%20plan,pl_abc123,enterprise_plan"). Example: mrr=36981972 means $369,819.72')
+                                   '"Silver%20plan,Gold%20plan,pl_abc123,enterprise_plan"), '
+                                   'filters (string: CFL-formatted expressions using tilde separators. Syntax: field~operator~value~AND~field~operator~value. '
+                                   'Common fields: mrr, currency, region, customer_status, plan, tags, custom.attribute_name. '
+                                   'Operators: ANY/ALL/NONE (sets), EQ/NOT_EQ, GT/GTE/LT/LTE (comparison), CONTAINS/NOT_CONTAINS (strings), '
+                                   'IS/IS_NOT (nulls). Examples: "currency~ANY~\'USD\',\'EUR\'", "mrr~GT~1000~AND~region~ANY~\'US\'", '
+                                   '"customer_status~ANY~\'active\'~AND~tags~ANY~\'vip\'". Use get_cfl_fields tool for complete field list). '
+                                   'Example: mrr=36981972 means $369,819.72')
         async def all_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.all_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.all_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='mrr_metrics',
                        description='[ChartMogul API] Retrieve Monthly Recurring Revenue metrics. CRITICAL: ALL MRR VALUES '
@@ -441,32 +837,36 @@ class ChartMogulMcp:
                                    'contraction (downgrades excluding cancellations), churn (cancellations), '
                                    'reactivation (previously cancelled returning). REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: mrr=363819722 means $3,638,197.22, mrr_new_business=288938 means $2,889.38')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... '
+                                   'Example: "mrr~GT~1000~AND~currency~ANY~\'USD\'". Use get_cfl_fields for field list). '
+                                   'Example: mrr=363819722 means $3,638,197.22, mrr_new_business=288938 means $2,889.38')
         async def mrr_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.mrr_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.mrr_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='arr_metrics',
                        description='[ChartMogul API] Retrieve Annual Recurring Revenue metrics. CRITICAL: ARR VALUES ARE '
                                    'INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. ARR = MRR × 12. '
                                    'Returns entries array with: date (string), arr (integer cents), arr_percentage_change (float). '
                                    'Plus summary object. REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), '
-                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans. '
+                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: arr=4076455668 means $40,764,556.68')
         async def arr_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.arr_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.arr_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='arpa_metrics',
                        description='[ChartMogul API] Retrieve Average Revenue Per Account metrics. CRITICAL: ARPA VALUES '
                                    'ARE INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. ARPA = Total MRR / Total Customers. '
                                    'Returns entries array with: date (string), arpa (integer cents), arpa_percentage_change (float). '
                                    'Plus summary object. REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), '
-                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans. '
+                                   'interval ("day", "week", "month", "quarter", "year"). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: arpa=84767 means $847.67 average revenue per account')
         async def arpa_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                               plans: str = None) -> list:
-            return api_client.arpa_metrics(self.config, start_date, end_date, interval, geo, plans)
+                               plans: str = None, filters: str = None) -> list:
+            return api_client.arpa_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='asp_metrics',
                        description='[ChartMogul API] Retrieve Average Sale Price metrics. CRITICAL: ASP VALUES ARE '
@@ -474,20 +874,22 @@ class ChartMogulMcp:
                                    'amount of new customers. Returns entries array with: date (string), asp (integer cents), '
                                    'asp_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval (string: "month", "quarter", "year" ONLY - day/week NOT supported). '
-                                   'OPTIONAL: geo, plans. Example: asp=152454 means $1,524.54 average sale price')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: asp=152454 means $1,524.54 average sale price')
         async def asp_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.asp_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.asp_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='customer_count_metrics',
                        description='[ChartMogul API] Retrieve customer count metrics (total active customers over time). '
                                    'Returns entries array with: date (string), customers (integer count), '
                                    'customers_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
                                    'end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: customers=382 means 382 active customers')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: customers=382 means 382 active customers')
         async def customer_count_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                         plans: str = None) -> list:
-            return api_client.customer_count_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                         plans: str = None, filters: str = None) -> list:
+            return api_client.customer_count_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='customer_churn_rate_metrics',
                        description='[ChartMogul API] Retrieve customer churn rate metrics as percentage. '
@@ -495,10 +897,11 @@ class ChartMogulMcp:
                                    'Returns entries array with: date (string), customer_churn_rate (float percentage), '
                                    'customer_churn_rate_percentage_change (float). Plus summary object. '
                                    'REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: customer_churn_rate=3.9 means 3.9% customer churn rate')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: customer_churn_rate=3.9 means 3.9% customer churn rate')
         async def customer_churn_rate_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                              plans: str = None) -> list:
-            return api_client.customer_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                              plans: str = None, filters: str = None) -> list:
+            return api_client.customer_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='mrr_churn_rate_metrics',
                        description='[ChartMogul API] Retrieve Net MRR Churn Rate metrics as percentage. '
@@ -508,21 +911,23 @@ class ChartMogulMcp:
                                    '(e.g., -300% means MRR quadrupled). Returns entries array with: date (string), '
                                    'mrr_churn_rate (float percentage), mrr_churn_rate_percentage_change (float). Plus summary object. '
                                    'REQUIRED: start_date (YYYY-MM-DD), end_date (YYYY-MM-DD), interval ("day", "week", "month", "quarter", "year"). '
-                                   'OPTIONAL: geo, plans. Example: mrr_churn_rate=-5.2 means -5.2% (net negative churn - good!)')
+                                   'OPTIONAL: geo, plans, filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
+                                   'Example: mrr_churn_rate=-5.2 means -5.2% (net negative churn - good!)')
         async def mrr_churn_rate_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                                         plans: str = None) -> list:
-            return api_client.mrr_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans)
+                                         plans: str = None, filters: str = None) -> list:
+            return api_client.mrr_churn_rate_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         @self.mcp.tool(name='ltv_metrics',
                        description='[ChartMogul API] Retrieve Customer Lifetime Value metrics. CRITICAL: LTV VALUES ARE '
                                    'INTEGER CENTS - DIVIDE BY 100 FOR ACTUAL CURRENCY AMOUNTS. LTV = Average Revenue Per User / '
                                    'Customer Churn Rate. Returns entries array with: date (string), ltv (integer cents), '
                                    'ltv_percentage_change (float). Plus summary object. REQUIRED: start_date (YYYY-MM-DD), '
-                                   'end_date (YYYY-MM-DD), interval (any valid value). OPTIONAL: geo, plans. '
+                                   'end_date (YYYY-MM-DD), interval (any valid value). OPTIONAL: geo, plans, '
+                                   'filters (string: CFL syntax field~operator~value~AND~... Use get_cfl_fields for field list). '
                                    'Example: ltv=2977624 means $29,776.24 customer lifetime value')
         async def ltv_metrics(start_date: str, end_date: str, interval: str, geo: str = None,
-                              plans: str = None) -> list:
-            return api_client.ltv_metrics(self.config, start_date, end_date, interval, geo, plans)
+                              plans: str = None, filters: str = None) -> list:
+            return api_client.ltv_metrics(self.config, start_date, end_date, interval, geo, plans, filters)
 
         ## Subscription Events - ChartMogul Subscription Lifecycle
         @self.mcp.tool(name='list_subscription_events',
