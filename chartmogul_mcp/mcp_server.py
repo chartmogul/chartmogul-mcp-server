@@ -14,7 +14,7 @@ class ChartMogulMcp:
         load_dotenv()
 
         # Initialize MCP Server
-        self.mcp = FastMCP(utils.MCP_SERVER_NAME, deps=utils.DEPENDENCIES)
+        self.mcp = FastMCP(utils.MCP_SERVER_NAME)
         LOGGER.info("ChartMogul MCP Server initialized")
 
         self.config = api_client.init_chartmogul_config()
@@ -1052,3 +1052,9 @@ class ChartMogulMcp:
         except Exception as e:
             LOGGER.error(f"Fatal Error in ChartMogul MCP Server: {str(e)}", exc_info=True)
             sys.exit(1)
+
+
+def main():
+    """Entry point for the chartmogul-mcp-server console script."""
+    server = ChartMogulMcp()
+    server.run()

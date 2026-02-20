@@ -1,6 +1,6 @@
 [project]
 name = "chartmogul-mcp-server"
-version = "0.3.1"
+version = "0.4.0"
 description = "ChartMogul's MCP server"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -9,6 +9,9 @@ dependencies = [
     "mcp[cli]>=1.7.1",
     "python-dotenv>=1.1.0",
 ]
+
+[project.scripts]
+chartmogul-mcp-server = "chartmogul_mcp.mcp_server:main"
 
 [project.urls]
 Home = "https://github.com/chartmogul/chartmogul-mcp-server"
